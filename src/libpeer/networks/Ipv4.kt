@@ -102,4 +102,10 @@ class Ipv4(override val options: HashMap<String, String> = HashMap()) : Network 
             it.onComplete()
         }
     }
+
+    fun getAddress(): BinaryAddress {
+        return BinaryAddress(identifier,
+            this.socket!!.inetAddress.hostAddress.toByteArray(UTF_8),
+            this.socket!!.port.toString().toByteArray(UTF_8))
+    }
 }

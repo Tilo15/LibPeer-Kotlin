@@ -6,7 +6,8 @@ import libpeer.formats.Discovery
 import libpeer.networks.Network
 
 interface Discoverer {
-    val Discovered: Subject<Discovery>
+
+    val discovered: Subject<Discovery>
 
     fun advertise(address: BinaryAddress): Int
     fun addApplication(namespace: ByteArray)

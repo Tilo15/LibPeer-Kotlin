@@ -14,7 +14,7 @@ This implementation has the following dependencies at this stage:
 
 - [ ] Discoverers
   - [ ] Samband
-  - [ ] AMPP
+  - [x] AMPP
 - [ ] Networks
   - [x] IPv4
   - [ ] NARP
