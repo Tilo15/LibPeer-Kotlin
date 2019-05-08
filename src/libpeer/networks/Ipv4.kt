@@ -104,8 +104,9 @@ class Ipv4(override val options: HashMap<String, String> = HashMap()) : Network 
     }
 
     fun getAddress(): BinaryAddress {
+        // TODO this doesn't work
         return BinaryAddress(identifier,
-            this.socket!!.inetAddress.hostAddress.toByteArray(UTF_8),
+            this.socket!!.localAddress.hostAddress.toByteArray(UTF_8),
             this.socket!!.port.toString().toByteArray(UTF_8))
     }
 }

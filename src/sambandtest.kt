@@ -1,5 +1,7 @@
 import libpeer.discoverers.Samband
+import libpeer.formats.BinaryAddress
 import libpeer.networks.Ipv4
+import kotlin.concurrent.thread
 
 fun main() {
 
@@ -28,6 +30,20 @@ fun main() {
         }
 
         discoverer.addApplication(appNamespace.toByteArray())
+
+        thread {
+            while(true) {
+                var delay = 0
+                discoverer.getAddresses().forEach {
+                    // TODO this should be cleaner
+                    val addr = BinaryAddress(it.networkType, it.networkAddress, it.networkPort, appNamespace.toByteArray())
+                    delay = discoverer.advertise(addr)
+                }
+
+                Thread.sleep(delay.toLong())
+
+            }
+        }
     }
 
     discoverer.stop()

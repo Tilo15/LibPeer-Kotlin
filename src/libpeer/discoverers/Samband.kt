@@ -36,7 +36,7 @@ class Samband(private val networks: List<Network>) : Discoverer{
         val data = packet.serialise()
 
         // Send it
-        socket!!.send(DatagramPacket(data, data.size))
+        socket!!.send(DatagramPacket(data, data.size, Inet4Address.getByName("224.0.0.63"), 1944))
 
         // Recommended re-advertising interval (5 seconds)
         return 5000
