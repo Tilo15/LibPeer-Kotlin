@@ -9,6 +9,7 @@ import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.Inet4Address
+import java.net.InetAddress
 import java.nio.charset.Charset
 import kotlin.concurrent.thread
 import kotlin.text.Charsets.UTF_8
@@ -21,18 +22,18 @@ class Ipv4(override val options: HashMap<String, String> = HashMap()) : Network 
     private var socket: DatagramSocket? = null
 
     override fun goUp(): Boolean {
-        socket = when {
-            "address" in options -> {
-                val port = options["port"]!!.toInt()
-                val address = Inet4Address.getByName(options["address"])
-                DatagramSocket(port, address)
-            }
-            "port" in options -> {
-                val port = options["port"]!!.toInt()
-                DatagramSocket(port)
-            }
-            else -> DatagramSocket()
+        var port = 3000
+        var address = InetAddress.getLocalHost()
+
+        if("address" in options) {
+            address = Inet4Address.getByName(options["address"])
         }
+
+        if("port" in options){
+            val port = options["port"]!!.toInt()
+        }
+
+        socket = DatagramSocket(port, address)
 
         thread {
             while (up) {
@@ -107,6 +108,6 @@ class Ipv4(override val options: HashMap<String, String> = HashMap()) : Network 
         // TODO this doesn't work
         return BinaryAddress(identifier,
             this.socket!!.localAddress.hostAddress.toByteArray(UTF_8),
-            this.socket!!.port.toString().toByteArray(UTF_8))
+            this.socket!!.localPort.toString().toByteArray(UTF_8))
     }
 }

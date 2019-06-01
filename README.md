@@ -13,8 +13,8 @@ This implementation has the following dependencies at this stage:
  ## Progress
 
 - [ ] Discoverers
-  - [ ] Samband
-  - [x] AMPP
+  - [x] Samband
+  - [ ] AMPP
 - [ ] Networks
   - [x] IPv4
   - [ ] NARP
