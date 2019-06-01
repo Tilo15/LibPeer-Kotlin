@@ -1,5 +1,6 @@
 package libpeer.muxer
 
+import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import libpeer.formats.BinaryAddress
@@ -47,12 +48,12 @@ class Muxer (private val networks: List<Network>){
         }
     }
 
-    public fun send(data: ByteArray, channel: ByteArray, transport: Byte, address: BinaryAddress) {
+    public fun send(data: ByteArray, channel: ByteArray, transport: Byte, address: BinaryAddress): Observable<Boolean> {
         // Create the parcel
         val parcel = Parcel(UUID.randomUUID(), channel, transport, data, address)
 
         // Send it over the network
-        networkMap[address.networkType.toHashableSequence()]!!.send(parcel.serialise(), address)
+        return networkMap[address.networkType.toHashableSequence()]!!.send(parcel.serialise(), address)
     }
 
     public fun addApplication(namespace: ByteArray) {
