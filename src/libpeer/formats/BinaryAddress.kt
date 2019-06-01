@@ -153,4 +153,20 @@ class BinaryAddress(
         }
     }
 
+    override fun hashCode(): Int {
+        val hashable = networkType + networkAddress + networkPort
+        return hashable.contentHashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if(other is BinaryAddress) {
+            return networkType.contentEquals(other.networkType) &&
+                    networkAddress.contentEquals(other.networkAddress) &&
+                    networkPort.contentEquals(other.networkPort)
+
+        }
+
+        return false
+    }
+
 }

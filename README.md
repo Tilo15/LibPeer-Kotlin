@@ -18,9 +18,9 @@ This implementation has the following dependencies at this stage:
 - [ ] Networks
   - [x] IPv4
   - [ ] NARP
-- [ ] Muxer
+- [x] Muxer
 - [ ] Transports
-  - [ ] EDP
+  - [x] EDP
   - [ ] DSTP
 - [ ] Modifiers
 - [ ] Interfaces

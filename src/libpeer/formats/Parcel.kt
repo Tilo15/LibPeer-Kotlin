@@ -57,7 +57,7 @@ class Parcel(
             val data = packet.data
 
             // Is it a valid Muxer Parcel?
-            if(data.slice(IntRange(0, 7)) != HEADER.toList()) {
+            if(data.slice(IntRange(0, 2)) != HEADER.toList()) {
                 throw IOException("Parcel does not start with 'MXR' header")
             }
 
