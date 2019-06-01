@@ -4,7 +4,6 @@ import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import libpeer.formats.BinaryAddress
 import libpeer.formats.Discovery
-import libpeer.formats.NetworkPacket
 import libpeer.formats.SambandPacket
 import libpeer.networks.Ipv4
 import libpeer.networks.Network
@@ -14,7 +13,6 @@ import java.io.IOException
 import java.net.DatagramPacket
 import java.net.Inet4Address
 import java.net.MulticastSocket
-import java.nio.charset.StandardCharsets.UTF_8
 import java.util.*
 import kotlin.concurrent.thread
 
