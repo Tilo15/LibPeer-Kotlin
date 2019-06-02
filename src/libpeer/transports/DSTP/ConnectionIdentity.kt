@@ -3,7 +3,7 @@ package libpeer.transports.DSTP
 import libpeer.formats.BinaryAddress
 import libpeer.util.HashableSequence
 
-class ConnectionIdentity(val address: BinaryAddress, val channel: ByteArray) {
+class ConnectionIdentity(val channel: ByteArray, val address: BinaryAddress) {
 
     override fun hashCode(): Int {
         val sequence = address.application + channel + address.networkType + address.networkAddress + address.networkPort

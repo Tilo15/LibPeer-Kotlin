@@ -7,9 +7,10 @@ import libpeer.formats.Receipt
 import libpeer.formats.TransportPacket
 import libpeer.muxer.Muxer
 import libpeer.transports.BaseTransport
+import libpeer.transports.Transports
 
 class DSTP(private val muxer: Muxer) : BaseTransport(muxer) {
-    override val identifier: Byte = 0x06
+    override val identifier: Byte = Transports.TRANSPORT_DSTP
 
     private val connections: HashMap<ConnectionIdentity, Connection> = HashMap()
 
@@ -25,7 +26,7 @@ class DSTP(private val muxer: Muxer) : BaseTransport(muxer) {
 
     private fun getConnection(channel: ByteArray, address: BinaryAddress): Connection {
         // Create the identity for this connection
-        val id = ConnectionIdentity(address, channel)
+        val id = ConnectionIdentity(channel, address)
 
         if(connections.containsKey(id)) {
             // Get the existing connection
