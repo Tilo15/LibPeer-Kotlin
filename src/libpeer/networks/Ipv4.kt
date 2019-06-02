@@ -5,6 +5,7 @@ import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import libpeer.formats.BinaryAddress
 import libpeer.formats.NetworkPacket
+import libpeer.formats.Receipt
 import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
@@ -76,13 +77,13 @@ class Ipv4(override val options: HashMap<String, String> = HashMap()) : Network 
     /**
      * Send the specified data to an address
      */
-    override fun send(data: ByteArray, address: BinaryAddress): Observable<Boolean> {
+    override fun send(data: ByteArray, address: BinaryAddress): Observable<Receipt> {
         // Is the network up?
         if(!up) {
             throw IOException("Cannot send data when network is down")
         }
 
-        return Observable.create<Boolean> {
+        return Observable.create<Receipt> {
             // Get the port number
             val port = address.networkPort.toString(UTF_8).toInt()
 
@@ -96,7 +97,7 @@ class Ipv4(override val options: HashMap<String, String> = HashMap()) : Network 
             socket!!.send(packet)
 
             // Report success to observer
-            it.onNext(true)
+            it.onNext(Receipt.success())
 
             // Complete
             it.onComplete()

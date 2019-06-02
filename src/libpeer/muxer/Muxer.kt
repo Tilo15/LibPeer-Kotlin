@@ -6,6 +6,7 @@ import io.reactivex.subjects.Subject
 import libpeer.formats.BinaryAddress
 import libpeer.formats.NetworkPacket
 import libpeer.formats.Parcel
+import libpeer.formats.Receipt
 import libpeer.networks.Network
 import libpeer.util.HashableSequence
 import libpeer.util.toHashableSequence
@@ -48,7 +49,7 @@ class Muxer (private val networks: List<Network>){
         }
     }
 
-    public fun send(data: ByteArray, channel: ByteArray, transport: Byte, address: BinaryAddress): Observable<Boolean> {
+    public fun send(data: ByteArray, channel: ByteArray, transport: Byte, address: BinaryAddress): Observable<Receipt> {
         // Create the parcel
         val parcel = Parcel(UUID.randomUUID(), channel, transport, data, address)
 

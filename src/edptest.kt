@@ -43,7 +43,7 @@ fun main() {
         println("************************************************")
         for (peer in peers) {
             trans.send(messageBytes, ByteArray(16), peer).subscribe {
-                if(it)
+                if(it.success)
                     println("Sent to $peer")
                 else
                     println("Failed to send to $peer")

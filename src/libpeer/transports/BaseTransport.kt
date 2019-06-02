@@ -5,6 +5,7 @@ import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import libpeer.formats.BinaryAddress
 import libpeer.formats.Parcel
+import libpeer.formats.Receipt
 import libpeer.formats.TransportPacket
 import libpeer.muxer.Muxer
 
@@ -24,6 +25,6 @@ abstract class BaseTransport(private val muxer: Muxer) : Transport {
     }
 
     protected abstract fun receive(parcel: Parcel)
-    abstract override fun send(data: ByteArray, channel: ByteArray, address: BinaryAddress): Observable<Boolean>
+    abstract override fun send(data: ByteArray, channel: ByteArray, address: BinaryAddress): Observable<Receipt>
 
 }

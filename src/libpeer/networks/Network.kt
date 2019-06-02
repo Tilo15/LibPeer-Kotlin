@@ -4,6 +4,7 @@ import io.reactivex.Observable
 import io.reactivex.subjects.Subject
 import libpeer.formats.BinaryAddress
 import libpeer.formats.NetworkPacket
+import libpeer.formats.Receipt
 
 interface Network {
 
@@ -14,6 +15,6 @@ interface Network {
 
     fun goUp(): Boolean
     fun goDown(): Boolean
-    fun send(data: ByteArray, address: BinaryAddress): Observable<Boolean>
+    fun send(data: ByteArray, address: BinaryAddress): Observable<Receipt>
 
 }
