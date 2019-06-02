@@ -9,13 +9,13 @@ interface Application {
     val namespace: ByteArray
 
     val incoming: Subject<Reception>
-    val newPeer: Subject<Discovery>
+    val newPeer: Subject<Peer>
 
     val networks: List<String>
     val transports: List<String>
     val discoverers: List<String>
 
-    fun send(data: ByteArray, transport: Byte, peer: BinaryAddress, channel: ByteArray = ByteArray(16))
+    fun send(data: ByteArray, transportId: Byte, peer: BinaryAddress, channel: ByteArray = ByteArray(16))
 
     fun addLabel(label: ByteArray)
 
@@ -27,8 +27,8 @@ interface Application {
 
     fun close()
 
-    fun findPeers(): List<Discovery>
+    fun findPeers(): List<Peer>
 
-    fun findPeersWithLabel(label: ByteArray): List<Discovery>
+    fun findPeersWithLabel(label: ByteArray): List<Peer>
 
 }

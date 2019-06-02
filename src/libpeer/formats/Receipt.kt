@@ -12,6 +12,10 @@ class Receipt(val success: Boolean, val errorLayer: Layer? = null, val errorMess
         }
     }
 
+    fun toErrorString(): String {
+        return "An error occurred at the ${errorLayer!!} layer of LibPeer: ${errorMessage!!}"
+    }
+
 }
 
 enum class Layer {
