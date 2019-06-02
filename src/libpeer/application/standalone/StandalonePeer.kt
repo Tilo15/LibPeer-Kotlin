@@ -5,9 +5,9 @@ import libpeer.formats.BinaryAddress
 import libpeer.util.HashableSequence
 import libpeer.util.toHashableSequence
 
-class StandalonePeer(val address: BinaryAddress, var lastSeen: Long = System.currentTimeMillis(), val labels: HashSet<HashableSequence> = hashSetOf()) : Peer {
+class StandalonePeer(override val address: BinaryAddress, override var lastSeen: Long = System.currentTimeMillis(), override val labels: HashSet<HashableSequence> = hashSetOf()) : Peer {
 
-    fun seen(label: ByteArray) {
+    override fun seen(label: ByteArray) {
         if(!label.isEmpty()) {
             labels.add(label.toHashableSequence())
         }
