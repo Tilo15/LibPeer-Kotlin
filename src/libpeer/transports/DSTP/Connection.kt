@@ -92,7 +92,6 @@ class Connection(private val muxer: Muxer, private val channel: ByteArray, priva
         lastPong = 0.0
         inFlightChunks.clear()
         lastQueuedChunk = uuidOf(ByteArray(16))
-        chunkTrackers.clear()
         chunkQueue.clear()
         receivedChunkIds.clear()
         receivedChunks.clear()
@@ -102,6 +101,8 @@ class Connection(private val muxer: Muxer, private val channel: ByteArray, priva
         chunkTrackers.forEach {
             it.canceled(reason)
         }
+
+        chunkTrackers.clear()
     }
 
     private fun connect() {
@@ -154,7 +155,7 @@ class Connection(private val muxer: Muxer, private val channel: ByteArray, priva
             val start = i * CHUNK_SIZE
 
             // Data end index
-            val end = i + 1 * CHUNK_SIZE
+            val end = Math.min((i + 1) * CHUNK_SIZE, data.size) - 1
 
             // Create chunk
             val chunk = Chunk.create(data.sliceArray(IntRange(start, end)), lastQueuedChunk)

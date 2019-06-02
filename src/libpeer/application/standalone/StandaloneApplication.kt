@@ -47,6 +47,9 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
 
 
     init {
+        // Put IP network up
+        ipv4.goUp()
+
         // Start up a thread for running actions
         thread {
             while(true) {
@@ -151,7 +154,7 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
                 namespace)
 
             // Advertise this address
-            delay = discoverer.advertise(appAddress) * 1000L
+            delay = discoverer.advertise(appAddress).toLong()
 
             // Advertise this address with each label
             for(label in labels) {

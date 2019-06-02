@@ -9,7 +9,7 @@ import libpeer.transports.DSTP.DSTP
 import libpeer.transports.Transports
 import java.io.IOException
 
-class DSI(application: Application, channel: ByteArray) :
+class DSI(application: Application, channel: ByteArray = ByteArray(16)) :
     BaseInterface(application, channel, Transports.TRANSPORT_DSTP) {
 
     private val connections: HashMap<BinaryAddress, Connection> = HashMap()

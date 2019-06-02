@@ -13,7 +13,7 @@ class Receipt(val success: Boolean, val errorLayer: Layer? = null, val errorMess
     }
 
     fun toErrorString(): String {
-        return "An error occurred at the ${errorLayer!!} layer of LibPeer: ${errorMessage!!}"
+        return "An error occurred at the ${errorLayer!!.toString().toLowerCase()} layer of LibPeer: ${errorMessage!!}"
     }
 
 }
