@@ -19,14 +19,14 @@ This implementation has the following dependencies at this stage:
   - [x] IPv4
   - [ ] NARP
 - [x] Muxer
-- [ ] Transports
+- [x] Transports
   - [x] EDP
-  - [ ] DSTP
+  - [x] DSTP
 - [ ] Modifiers
 - [ ] Interfaces
-  - [ ] DSI
+  - [x] DSI
   - [ ] OMI
   - [ ] SODI
-- [ ] Application Utilities
+- [x] Application Utilities
 
 Note that the "application" utilities will be a nice API for applications to use and will not be based on the LibPeer Standard Protocols specification. Rather they will be based on the Python3 reference implementation's API. 
