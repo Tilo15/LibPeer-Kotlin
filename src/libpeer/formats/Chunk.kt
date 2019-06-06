@@ -23,7 +23,7 @@ class Chunk(
         val dataSection = id.toByteArray() + previousChunkId.toByteArray() + payload
 
         val lightHasher = Adler32()
-        lightHasher.update(payload)
+        lightHasher.update(dataSection)
         lightChecksum = lightHasher.value.toUInt()
 
         // We are probably sending very shortly
@@ -74,7 +74,7 @@ class Chunk(
 
             // Calculate checksums
             val lightHasher = Adler32()
-            lightHasher.update(payload)
+            lightHasher.update(dataSection)
 
             var validHashes = false
 

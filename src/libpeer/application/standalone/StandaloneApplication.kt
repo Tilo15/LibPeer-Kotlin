@@ -25,7 +25,8 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
     override val incoming: Subject<Reception> = PublishSubject.create()
     override val newPeer: Subject<Peer> = PublishSubject.create()
 
-    private val actionQueue: BlockingQueue<() -> Any> = LinkedBlockingQueue()
+    private val txQueue: BlockingQueue<() -> Any> = LinkedBlockingQueue()
+    private val rxQueue: BlockingQueue<() -> Any> = LinkedBlockingQueue()
 
     private val ipv4: Ipv4 = Ipv4()
     private val muxer: Muxer = Muxer(listOf(ipv4))
@@ -50,10 +51,17 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
         // Put IP network up
         ipv4.goUp()
 
-        // Start up a thread for running actions
+        // Start up a thread for running transmit actions
         thread {
             while(true) {
-                actionQueue.take()()
+                txQueue.take()()
+            }
+        }
+
+        // Start up a thread for running receive actions
+        thread {
+            while(true) {
+                rxQueue.take()()
             }
         }
 
@@ -70,11 +78,25 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
                 }
             }
         }
+
+        // Subscribe to network data from the transports
+        // XXX this should be more generic
+        dstp.incoming.subscribe {
+            rxQueue.put {
+                incoming.onNext(Reception(it.data, dstp.identifier, it.channel, it.address))
+            }
+        }
+
+        edp.incoming.subscribe {
+            rxQueue.put {
+                incoming.onNext(Reception(it.data, edp.identifier, it.channel, it.address))
+            }
+        }
     }
 
 
     private fun <T>runAction(action: Action<T>): T{
-        actionQueue.put {
+        txQueue.put {
             action.run()
         }
 

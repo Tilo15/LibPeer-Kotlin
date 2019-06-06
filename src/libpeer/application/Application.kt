@@ -1,5 +1,6 @@
 package libpeer.application
 
+import io.reactivex.Observable
 import io.reactivex.subjects.Subject
 import libpeer.formats.BinaryAddress
 import libpeer.formats.Discovery

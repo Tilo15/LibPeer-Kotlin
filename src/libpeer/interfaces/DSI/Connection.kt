@@ -29,17 +29,17 @@ class Connection(private val rawSend: (data: ByteArray) -> Any, private val newC
     private var currentHunk: ByteArray = ByteArray(0)
 
 
-    public fun receive(data: ByteArray) {
-        if (expectedLeft == 0uL && data.sliceArray(IntRange(0, 3)).contentEquals(Connection.HEADER)) {
+    fun receive(data: ByteArray) {
+        if (expectedLeft == 0uL && data.sliceArray(IntRange(0, 2)).contentEquals(Connection.HEADER)) {
             // Message is valid DSI packet
 
-            when (data[4]) {
+            when (data[3]) {
                 Connection.MESSAGE_CONNECTION_REQUEST -> {
                     // Are we connected?
                     if (!connected) {
                         // We are now
                         connected = true
-                        rawSend(byteArrayOf(Connection.MESSAGE_CONNECTION_ACKNOWLEDGE))
+                        rawSend(Connection.HEADER + byteArrayOf(Connection.MESSAGE_CONNECTION_ACKNOWLEDGE))
 
                         // Inform application
                         newConnection(this)
@@ -64,11 +64,10 @@ class Connection(private val rawSend: (data: ByteArray) -> Any, private val newC
                     // Are we connected?
                     if (connected) {
                         // Stream data, get expected length
-                        // TODO this does not match the standards - data bigger than a Long may cause errors
                         expectedLeft = ByteBuffer.wrap(data, 4, 12).getLong().toULong()
 
                         // Re-process the rest of this message
-                        receive(data.sliceArray(IntRange(12, data.size)))
+                        receive(data.sliceArray(IntRange(12, data.size - 1)))
                     }
                 }
             }
@@ -82,10 +81,10 @@ class Connection(private val rawSend: (data: ByteArray) -> Any, private val newC
             }
 
             // Get up to the expected amount of data
-            val payload = data.sliceArray(IntRange(0, readable))
+            val payload = data.sliceArray(IntRange(0, readable - 1))
 
             // Preserve leftovers
-            val leftovers = data.sliceArray(IntRange(readable, data.size))
+            val leftovers = data.sliceArray(IntRange(readable, data.size - 1))
 
             // Add the payload to the queue
             fifo.put(payload)
@@ -112,17 +111,17 @@ class Connection(private val rawSend: (data: ByteArray) -> Any, private val newC
 
     fun connect() {
         expectedAck = true
-        rawSend("C".toByteArray())
+        rawSend(Connection.HEADER + byteArrayOf(Connection.MESSAGE_CONNECTION_REQUEST))
     }
 
 
     fun read(count: Int, timeout: Int = 10000): ByteArray {
         if(currentHunk.isNotEmpty()){
             // Read up to the requested amount of data from the hunk
-            val data = currentHunk.sliceArray(IntRange(0, Math.min(currentHunk.size, count)))
+            val data = currentHunk.sliceArray(IntRange(0, Math.min(currentHunk.size - 1, count)))
 
             // Remove read data from hunk
-            currentHunk = currentHunk.sliceArray(IntRange(data.size, currentHunk.size))
+            currentHunk = currentHunk.sliceArray(IntRange(data.size, currentHunk.size - 1))
 
             // If there is more data to be read
             if(data.size < count) {
@@ -149,7 +148,7 @@ class Connection(private val rawSend: (data: ByteArray) -> Any, private val newC
             throw IOException("Cannot send to remote peer, connection closed")
         }
 
-        rawSend(byteArrayOf(MESSAGE_SEND_DATA) + ByteBuffer.allocate(8).putLong(data.size.toLong()).array() + data)
+        rawSend(Connection.HEADER + byteArrayOf(MESSAGE_SEND_DATA) + ByteBuffer.allocate(8).putLong(data.size.toLong()).array() + data)
     }
 
 

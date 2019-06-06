@@ -77,7 +77,10 @@ class Connection(private val muxer: Muxer, private val channel: ByteArray, priva
 
     private fun rawSend(data: ByteArray) {
         // Send to the muxer
-        muxer.send(data, channel, 0x06, address)
+        muxer.send(data, channel, 0x06, address).subscribe {
+            // No further action required
+            // Todo handle network-level errors?
+        }
     }
 
     private fun kill(reason: String) {
@@ -150,7 +153,7 @@ class Connection(private val muxer: Muxer, private val channel: ByteArray, priva
         val chunkCount = Math.ceil(data.size / CHUNK_SIZE.toDouble()).toInt()
         val chunks = LinkedList<Chunk>()
 
-        for(i in 0..chunkCount) {
+        for(i in 0 until chunkCount) {
             // Data start index
             val start = i * CHUNK_SIZE
 
@@ -265,9 +268,9 @@ class Connection(private val muxer: Muxer, private val channel: ByteArray, priva
             MESSAGE_CONNECTION_RESET -> receiveConnectionReset()
             MESSAGE_PING -> receivePing()
             MESSAGE_PONG -> receivePong()
-            MESSAGE_CHUNK -> receiveChunk(data.sliceArray(IntRange(1, data.size)))
-            MESSAGE_CHUNK_ACKNOWLEDGE -> receiveChunkAcknowledge(data.sliceArray(IntRange(1, data.size)))
-            MESSAGE_CHUNK_NEGATIVE_ACKNOWLEDGE -> receiveChunkNegativeAcknowledge(data.sliceArray(IntRange(1, data.size)))
+            MESSAGE_CHUNK -> receiveChunk(data.sliceArray(IntRange(1, data.size - 1)))
+            MESSAGE_CHUNK_ACKNOWLEDGE -> receiveChunkAcknowledge(data.sliceArray(IntRange(1, data.size - 1)))
+            MESSAGE_CHUNK_NEGATIVE_ACKNOWLEDGE -> receiveChunkNegativeAcknowledge(data.sliceArray(IntRange(1, data.size - 1)))
         }
     }
 
@@ -360,6 +363,7 @@ class Connection(private val muxer: Muxer, private val channel: ByteArray, priva
             rawSend(acknowledgement)
 
             // Handle the chunk
+            handleChunk(chunk)
         }
         else {
             // Chunk got broken on the way
@@ -369,7 +373,7 @@ class Connection(private val muxer: Muxer, private val channel: ByteArray, priva
 
     private fun receiveChunkAcknowledge(data: ByteArray) {
         // Read message
-        val chunkId = data.sliceArray(IntRange(0, 16)).toHashableSequence()
+        val chunkId = data.sliceArray(IntRange(0, 15)).toHashableSequence()
         val timeSent = ByteBuffer.wrap(data, 16, 8).double
 
         // Is this chunk still in flight?
