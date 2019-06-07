@@ -47,7 +47,7 @@ class Solicitation(val query: String, val token: UUID, val peer: BinaryAddress, 
 
     }
 
-    private fun <T>reply(obj: T, data: ByteArray = ByteArray(0)) {
+    fun <T>reply(obj: T, data: ByteArray = ByteArray(0)) {
         // Send along the data
         send(createReply(obj, data.size.toLong()), peer)
         txFraction = 1f
