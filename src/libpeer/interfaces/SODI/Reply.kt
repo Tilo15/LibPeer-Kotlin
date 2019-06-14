@@ -4,6 +4,7 @@ import libpeer.formats.BinaryAddress
 import libpeer.formats.TransferInformation
 import libpeer.util.uuidOf
 import org.msgpack.MessagePack
+import org.msgpack.template.Template
 import org.msgpack.type.Value
 import java.nio.ByteBuffer
 import java.util.*
@@ -30,7 +31,7 @@ class Reply(val peer: BinaryAddress, data: ByteArray) {
         token = uuidOf(data.sliceArray(IntRange(4, 19)))
 
         // Handle the rest of the data
-        // TODO
+        receive(data.sliceArray(IntRange(20, data.size - 1)))
     }
 
     fun receive(data: ByteArray): ByteArray {
@@ -62,11 +63,14 @@ class Reply(val peer: BinaryAddress, data: ByteArray) {
             receivedBinarySize = true
 
             // Get leftovers
-            val leftovers = data.sliceArray(IntRange(Math.min(data.size - 1, 8), data.size -1))
+            val leftovers = data.sliceArray(IntRange(Math.min(data.size, 8), data.size -1))
 
             // Run any leftovers through this function
             if(leftovers.isNotEmpty()) {
                 return receive(leftovers)
+            }
+            else if(binaryDataSize == 0uL) {
+                isComplete = true
             }
 
         }
@@ -104,6 +108,11 @@ class Reply(val peer: BinaryAddress, data: ByteArray) {
     fun getObject(): Value {
         val messagePack = MessagePack()
         return messagePack.read(objectData)
+    }
+
+    fun <T>getObject(template: Template<T>): T {
+        val messagePack = MessagePack()
+        return messagePack.read(objectData, template)
     }
 
     fun read(): ByteArray {

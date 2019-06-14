@@ -33,7 +33,10 @@ class Solicitation(val query: String, val token: UUID, val peer: BinaryAddress, 
             val msgPack = MessagePack()
             val message = msgPack.read(data.sliceArray(IntRange(2, data.size - 1)), Templates.tMap(Templates.TByteArray, Templates.TByteArray))
 
-            return Solicitation(message[FIELD_QUERY]!!.toString(UTF_8), uuidOf(message[FIELD_TOKEN]!!), peer, send)
+            val queryKey = message.keys.find { it!!.contentEquals(FIELD_QUERY) }
+            val tokenKey = message.keys.find { it!!.contentEquals(FIELD_TOKEN) }
+
+            return Solicitation(message[queryKey]!!.toString(UTF_8), uuidOf(message[tokenKey]!!), peer, send)
         }
 
     }
@@ -42,14 +45,18 @@ class Solicitation(val query: String, val token: UUID, val peer: BinaryAddress, 
         val msgPack = MessagePack()
         val objData = msgPack.write(obj)
         return ByteBuffer.allocate(4).putInt(objData.size).array() +
+                token.toByteArray() +
                 objData +
-                ByteBuffer.allocate(8).putLong(dataSize).array()
+                ByteBuffer.allocate(8).putLong(dataSize.toULong().toLong()).array()
 
     }
 
     fun <T>reply(obj: T, data: ByteArray = ByteArray(0)) {
         // Send along the data
         send(createReply(obj, data.size.toLong()), peer)
+        if(data.isNotEmpty()){
+            send(data, peer) // Todo accept streams and stuff too
+        }
         txFraction = 1f
     }
 }

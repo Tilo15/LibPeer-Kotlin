@@ -79,7 +79,7 @@ class SODI(application: Application, channel: ByteArray = ByteArray(16)) :
         }
     }
 
-    private fun solicit(peer: BinaryAddress, query: String): Observable<Reply> {
+    fun solicit(peer: BinaryAddress, query: String): Observable<Reply> {
         val solic = Solicitation(query, UUID.randomUUID(), peer) { data, peer -> rawSend(data, peer)}
 
         // Create and store the observable
