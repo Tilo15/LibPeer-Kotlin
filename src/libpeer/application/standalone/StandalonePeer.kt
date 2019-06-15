@@ -20,7 +20,10 @@ class StandalonePeer(override val address: BinaryAddress, override var lastSeen:
     }
 
     override fun equals(other: Any?): Boolean {
-        return address == other
+        if(other is StandalonePeer) {
+            return address == other.address
+        }
+        return false
     }
 
 }
