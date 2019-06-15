@@ -470,7 +470,7 @@ class Connection(private val muxer: Muxer, private val channel: ByteArray, priva
     // Utility
     private fun timeout(duration: Long, condition: () -> Boolean, action: () -> Any, else_action: (() -> Any)? = null) {
 
-        thread {
+        thread(name = "DSTP Timeout Timer ($duration ms)") {
             // Wait for the specified duration
             Thread.sleep(duration * 1000)
 

@@ -59,7 +59,7 @@ class Samband(private val networks: List<Network>) : Discoverer{
 
         up = true
 
-        thread {
+        thread(name = "Samband Listener") {
             while (up) {
                 // Ready the buffer
                 val buffer = ByteArray(65536)

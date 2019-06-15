@@ -35,7 +35,7 @@ class Ipv4(override val options: HashMap<String, String> = HashMap()) : Network 
 
         socket = DatagramSocket(port, address)
 
-        thread {
+        thread(name = "IPv4 Network Listener") {
             while (up) {
                 // Ready the buffer
                 val buffer = ByteArray(65536)

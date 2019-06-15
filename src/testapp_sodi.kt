@@ -14,6 +14,7 @@ import java.lang.Exception
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.thread
 import kotlin.math.roundToInt
 
 fun main() {
@@ -28,7 +29,9 @@ fun main() {
                 val bin = Files.readAllBytes(File(it.query.substring(4)).toPath())
                 val obj = HashMap<String, String>()
                 obj["status"] = "OK"
-                it.reply(obj, bin)
+                thread(name = "App Send File") {
+                    it.reply(obj, bin)
+                }
             }
             catch (e: Exception) {
                 val obj = HashMap<String, String>()
@@ -162,6 +165,7 @@ fun main() {
                     print("Downloading ${file["path"]} ${(reply!!.getTransferInformation().receivedFraction * 100).roundToInt()}% complete...\r")
                 }
 
+                output.write(reply!!.read())
                 output.close()
                 println("\n Download complete!")
             }

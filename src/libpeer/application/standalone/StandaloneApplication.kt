@@ -52,14 +52,14 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
         ipv4.goUp()
 
         // Start up a thread for running transmit actions
-        thread {
+        thread(name = "Application TX Queue") {
             while(true) {
                 txQueue.take()()
             }
         }
 
         // Start up a thread for running receive actions
-        thread {
+        thread(name = "Application RX Queue") {
             while(true) {
                 rxQueue.take()()
             }
@@ -193,7 +193,7 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
         }
 
         // After the specified delay, do it again
-        thread {
+        thread(name = "Advertiser Timeout") {
             Thread.sleep(delay)
             if(discoverable){
                 advertise(discoverer)
