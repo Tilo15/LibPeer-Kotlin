@@ -160,9 +160,13 @@ fun main() {
                 println("Peer accepted request")
                 val output = FileOutputStream(File(file["path"].toString().replace("\"", "")).absolutePath)
 
+                var lastPrint = 0L
                 while(reply!!.getTransferInformation().receivedFraction != 1.0f) {
                     output.write(reply!!.read())
-                    print("Downloading ${file["path"]} ${(reply!!.getTransferInformation().receivedFraction * 100).roundToInt()}% complete...\r")
+                    if(lastPrint < System.currentTimeMillis() - 100){
+                        print("Downloading ${file["path"]} ${(reply!!.getTransferInformation().receivedFraction * 100).roundToInt()}% complete...\r")
+                        lastPrint = System.currentTimeMillis()
+                    }
                 }
 
                 output.write(reply!!.read())

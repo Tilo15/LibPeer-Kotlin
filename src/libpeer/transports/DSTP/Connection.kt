@@ -63,8 +63,8 @@ class Connection(private val muxer: Muxer, private val channel: ByteArray, priva
 
     private fun calculateWindowSize() {
         // Calculate the next window size
-        val delayFactor = 1 - lastPacketDelay * 10
-        val windowFactor = inFlight.toFloat() / windowSize.toFloat()
+        val delayFactor = 1.0 - lastPacketDelay * 10.0
+        val windowFactor = inFlight.toFloat() / windowSize
         val gain = delayFactor.toFloat() * windowFactor
 
         windowSize += gain
@@ -228,7 +228,7 @@ class Connection(private val muxer: Muxer, private val channel: ByteArray, priva
 
         if(available > 0) {
             // Send the next chunks
-            for (i in 0..available) {
+            for (i in 0 until available) {
                 // Do we have more to send?
                 if(chunkQueue.isEmpty()) {
                     // Exit loop
@@ -470,7 +470,7 @@ class Connection(private val muxer: Muxer, private val channel: ByteArray, priva
     // Utility
     private fun timeout(duration: Long, condition: () -> Boolean, action: () -> Any, else_action: (() -> Any)? = null) {
 
-        thread(name = "DSTP Timeout Timer ($duration ms)") {
+        thread(name = "DSTP Timeout Timer ($duration s)") {
             // Wait for the specified duration
             Thread.sleep(duration * 1000)
 
