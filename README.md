@@ -13,9 +13,9 @@ This implementation has the following dependencies at this stage:
 
  ## Progress
 
-- [ ] Discoverers
+- [x] Discoverers
   - [x] Samband
-  - [ ] AMPP
+  - [x] AMPP
 - [ ] Networks
   - [x] IPv4
   - [ ] NARP
@@ -24,7 +24,7 @@ This implementation has the following dependencies at this stage:
   - [x] EDP
   - [x] DSTP **NB: known issues with timing**
 - [ ] Modifiers
-- [ ] Interfaces
+- [x] Interfaces
   - [x] DSI
   - [x] OMI
   - [x] SODI

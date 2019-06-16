@@ -3,6 +3,8 @@ package libpeer.discoverers.AMPP
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import libpeer.discoverers.AMPP.bootstrappers.Bootstrapper
+import libpeer.discoverers.AMPP.bootstrappers.DNS
+import libpeer.discoverers.AMPP.bootstrappers.Ipv4Multicast
 import libpeer.discoverers.Discoverer
 import libpeer.formats.AMPP.Advertorial
 import libpeer.formats.AMPP.Subscription
@@ -37,15 +39,22 @@ class AMPP(networks: List<Network>) : Discoverer {
 
     private val networkMap: Map<HashableSequence, Network> = networks.associate { Pair(it.identifier.toHashableSequence(), it) }
 
-    private val bootstrappers: HashSet<Bootstrapper> = hashSetOf() // TODO
+    private val bootstrappers: HashSet<Bootstrapper> = hashSetOf(DNS(), Ipv4Multicast(networks))
 
     init {
+        // Intialise AMPP subscription item peers
+        subscriptionItemPeers[NAMESPACE] = SubscriptionItemPeers(NAMESPACE)
+
         for(network in networks) {
-            network.incoming.subscribe { networkIncoming(it) }
+            network.incoming.subscribe {
+                networkIncoming(it)
+            }
         }
 
         for(bootstrapper in bootstrappers) {
-            bootstrapper.discovered.subscribe { newAmppPeer(it) }
+            bootstrapper.discovered.subscribe {
+                newAmppPeer(it)
+            }
         }
     }
 
@@ -128,7 +137,7 @@ class AMPP(networks: List<Network>) : Discoverer {
 
     private fun newAmppPeer(address: BinaryAddress){
         // Do we already have this peer?
-        if(peers.contains(address)) {
+        if(!peers.contains(address)) {
             // Add the peer
             peers.add(address)
 
@@ -181,7 +190,7 @@ class AMPP(networks: List<Network>) : Discoverer {
 
             // Get message type
             val messageType = networkPacket.data.sliceArray(IntRange(20, 22)).toHashableSequence()
-            val message = networkPacket.data.sliceArray(IntRange(23, networkPacket.data.size))
+            val message = networkPacket.data.sliceArray(IntRange(23, networkPacket.data.size - 1))
 
             when(messageType) {
                 MESSAGE_ADVERTORIAL -> handleAdvetorial(message, networkPacket.address)
@@ -196,7 +205,7 @@ class AMPP(networks: List<Network>) : Discoverer {
         val advertorial = Advertorial.deserialise(message)
 
         // Have we received this before?
-        if(cache.contains(advertorial)) {
+        if(!cache.contains(advertorial)) {
             // Do we have peers interesting in this app?
             val namespace = advertorial.address.application.toHashableSequence()
             if(subscriptionItemPeers.containsKey(namespace)) {
@@ -238,7 +247,7 @@ class AMPP(networks: List<Network>) : Discoverer {
         val subscriptionId = subscription.id.toHashableSequence()
 
         // Have we received this before?
-        if(subscriptionIds.contains(subscriptionId)) {
+        if(!subscriptionIds.contains(subscriptionId)) {
             // Add it to the set of received subscription messages
             subscriptionIds.add(subscriptionId)
 
@@ -306,7 +315,9 @@ class AMPP(networks: List<Network>) : Discoverer {
         val networkId = address.networkType.toHashableSequence()
         if(networkMap.containsKey(networkId)) {
             val network = networkMap[networkId]!!
-            network.send(HEADER + hashableInstanceId.byteArray + data, address)
+            network.send(HEADER + hashableInstanceId.byteArray + data, address).subscribe {
+                // TODO handle errors? log?
+            }
         }
         else {
             throw  IOException("Network type unavailable")

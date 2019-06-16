@@ -4,6 +4,7 @@ import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import libpeer.application.Application
 import libpeer.application.Peer
+import libpeer.discoverers.AMPP.AMPP
 import libpeer.discoverers.Discoverer
 import libpeer.discoverers.Samband
 import libpeer.formats.*
@@ -37,7 +38,7 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
     private val discoveries: HashSet<StandalonePeer> = HashSet()
     private var discoverable: Boolean = false
 
-    private val discovererInstances: List<Discoverer> = listOf(Samband(listOf(ipv4)))
+    private val discovererInstances: List<Discoverer> = listOf(AMPP(listOf(ipv4)), Samband(listOf(ipv4)))
 
     override val networks: List<String>
         get() = TODO("not implemented")
@@ -66,8 +67,8 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
         }
 
         discovererInstances.forEach {
-            it.addApplication(namespace)
             it.start()
+            it.addApplication(namespace)
             it.discovered.subscribe { discovery ->
                 if(discovery.address.application.contentEquals(namespace)) {
                     // We found something interesting
@@ -118,6 +119,9 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
     }
 
     override fun addLabel(label: ByteArray) {
+        if(label.size != 32) {
+            throw IOException("Labels must be 32 bytes long")
+        }
         labels.add(label.toHashableSequence())
     }
 
