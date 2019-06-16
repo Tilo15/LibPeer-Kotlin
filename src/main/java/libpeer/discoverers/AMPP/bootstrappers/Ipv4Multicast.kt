@@ -22,6 +22,8 @@ class Ipv4Multicast(networks: List<Network>): Bootstrapper {
     override fun start() {
         samband.start()
 
+        running = true
+
         thread(name = "Samband AMPP Bootstrapper") {
             while(running) {
                 val addresses = samband.getAddresses()

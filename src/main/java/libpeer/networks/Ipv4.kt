@@ -7,12 +7,12 @@ import libpeer.formats.BinaryAddress
 import libpeer.formats.NetworkPacket
 import libpeer.formats.Receipt
 import java.io.IOException
-import java.net.DatagramPacket
-import java.net.DatagramSocket
-import java.net.Inet4Address
-import java.net.InetAddress
 import kotlin.concurrent.thread
 import kotlin.text.Charsets.UTF_8
+import java.net.*
+import java.net.NetworkInterface.getNetworkInterfaces
+
+
 
 class Ipv4(override val options: HashMap<String, String> = HashMap()) : Network {
 
@@ -27,7 +27,7 @@ class Ipv4(override val options: HashMap<String, String> = HashMap()) : Network 
 
     override fun goUp(): Boolean {
         var port = 3000
-        var address = InetAddress.getLocalHost()
+        var address = getLocalIpAddress()
 
         if("address" in options) {
             address = Inet4Address.getByName(options["address"])
@@ -113,5 +113,23 @@ class Ipv4(override val options: HashMap<String, String> = HashMap()) : Network 
         return BinaryAddress(identifier,
             this.socket!!.localAddress.hostAddress.toByteArray(UTF_8),
             this.socket!!.localPort.toString().toByteArray(UTF_8))
+    }
+
+
+    private fun getLocalIpAddress(): InetAddress? {
+
+        val en = getNetworkInterfaces()
+        while (en.hasMoreElements()) {
+            val intf = en.nextElement()
+            val enumIpAddr = intf.inetAddresses
+            while (enumIpAddr.hasMoreElements()) {
+                val inetAddress = enumIpAddr.nextElement()
+                if (!inetAddress.isLoopbackAddress && inetAddress is Inet4Address) {
+                    return inetAddress
+                }
+            }
+        }
+
+        return null
     }
 }
