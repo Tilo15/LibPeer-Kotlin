@@ -21,7 +21,7 @@ This implementation has the following dependencies at this stage:
 - [x] Muxer
 - [x] Transports
   - [x] EDP
-  - [x] DSTP * NB: known issues with timing *
+  - [x] DSTP **NB: known issues with timing**
 - [ ] Modifiers
 - [ ] Interfaces
   - [x] DSI
