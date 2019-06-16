@@ -35,7 +35,7 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
     private val dstp: DSTP = DSTP(muxer)
 
     private val labels: HashSet<HashableSequence> = HashSet()
-    private val discoveries: HashSet<StandalonePeer> = HashSet()
+    private val discoveries: HashMap<BinaryAddress, StandalonePeer> = HashMap()
     private var discoverable: Boolean = false
 
     private val discovererInstances: List<Discoverer> = listOf(AMPP(listOf(ipv4)), Samband(listOf(ipv4)))
@@ -72,9 +72,22 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
             it.discovered.subscribe { discovery ->
                 if(discovery.address.application.contentEquals(namespace)) {
                     // We found something interesting
-                    val peer = StandalonePeer(discovery.address)
+                    val peer: StandalonePeer
+                    if(discoveries.containsKey(discovery.address)){
+                        peer = discoveries[discovery.address]!!
+                    }
+                    else {
+                        val address = BinaryAddress(
+                            discovery.address.networkType,
+                            discovery.address.networkAddress,
+                            discovery.address.networkPort,
+                            discovery.address.application
+                        )
+                        peer = StandalonePeer(address)
+                        discoveries[discovery.address] = peer
+                    }
+
                     peer.seen(discovery.address.label)
-                    discoveries.add(peer)
                     newPeer.onNext(peer)
                 }
             }
@@ -148,14 +161,14 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
     }
 
     override fun findPeers(): List<Peer> {
-        return discoveries.toList()
+        return discoveries.values.toList()
     }
 
     override fun findPeersWithLabel(label: ByteArray): List<Peer> {
         if(label.size != 32) {
             throw IOException("Labels must be 32 bytes long")
         }
-        return discoveries.filter { it.labels.contains(label.toHashableSequence()) }
+        return discoveries.values.filter { it.labels.contains(label.toHashableSequence()) }
     }
 
 

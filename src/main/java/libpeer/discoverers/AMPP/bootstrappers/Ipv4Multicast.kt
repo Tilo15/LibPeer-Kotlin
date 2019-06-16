@@ -22,7 +22,7 @@ class Ipv4Multicast(networks: List<Network>): Bootstrapper {
     override fun start() {
         samband.start()
 
-        thread {
+        thread(name = "Samband AMPP Bootstrapper") {
             while(running) {
                 val addresses = samband.getAddresses()
                 var delay = 0L
