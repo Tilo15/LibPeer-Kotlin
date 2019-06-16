@@ -16,7 +16,11 @@ import kotlin.text.Charsets.UTF_8
 
 class Ipv4(override val options: HashMap<String, String> = HashMap()) : Network {
 
-    override val identifier: ByteArray = "IPv4".toByteArray(UTF_8)
+    companion object {
+        val IDENTIFIER: ByteArray = "IPv4".toByteArray(UTF_8)
+    }
+
+    override val identifier: ByteArray = IDENTIFIER
     override var up: Boolean = false
     override val incoming: Subject<NetworkPacket> = PublishSubject.create<NetworkPacket>()
     private var socket: DatagramSocket? = null

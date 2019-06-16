@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="dnsjava:dnsjava:2.1.9" type="repository">
+    <properties maven-id="dnsjava:dnsjava:2.1.9" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/dnsjava/dnsjava/2.1.9/dnsjava-2.1.9.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
