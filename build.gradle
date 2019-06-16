@@ -14,4 +14,12 @@ targetCompatibility = 1.5
 repositories {
         
      maven { url "https://repo.maven.apache.org/maven2" }
+     mavenCentral()
+     jcenter()
+}
+
+dependencies {
+     api "io.reactivex.rxjava2:rxkotlin:2.3.0"
+     api "org.msgpack:msgpack:0.6.12"
+     api "dnsjava:dnsjava:2.1.9"
 }
