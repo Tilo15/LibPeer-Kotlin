@@ -152,6 +152,9 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
     }
 
     override fun findPeersWithLabel(label: ByteArray): List<Peer> {
+        if(label.size != 32) {
+            throw IOException("Labels must be 32 bytes long")
+        }
         return discoveries.filter { it.labels.contains(label.toHashableSequence()) }
     }
 
