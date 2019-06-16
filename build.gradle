@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'maven'
 
-group = 'kotlin.libpeer.unitatem.net'
+group = 'net.unitatem.libpeer.kotlin'
 version = '1.0-SNAPSHOT'
 
 description = """"""
