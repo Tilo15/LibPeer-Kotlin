@@ -9,6 +9,7 @@ Note that this port of LibPeer was started as part of an assignment involving a 
 
 This implementation has the following dependencies at this stage:
  * RxKotlin
+ * MessagePack
 
  ## Progress
 
