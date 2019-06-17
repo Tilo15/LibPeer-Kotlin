@@ -185,7 +185,7 @@ class StandaloneApplication(override val namespace: ByteArray) : Application {
     private fun advertise(discoverer: Discoverer) {
         val addresses = discoverer.getAddresses()
 
-        var delay: Long = 0
+        var delay: Long = 5
 
         // Loop over each address
         for(address in addresses) {

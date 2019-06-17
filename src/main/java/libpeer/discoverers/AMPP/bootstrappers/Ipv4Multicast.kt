@@ -16,11 +16,15 @@ class Ipv4Multicast(networks: List<Network>): Bootstrapper {
 
     init {
         samband.addApplication(AMPP.NAMESPACE.byteArray)
-        samband.discovered.subscribe { discovered.onNext(it.address) }
+        samband.discovered.subscribe {
+            discovered.onNext(it.address)
+        }
     }
 
     override fun start() {
         samband.start()
+
+        running = true
 
         thread(name = "Samband AMPP Bootstrapper") {
             while(running) {

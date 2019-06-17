@@ -5,10 +5,7 @@ import io.reactivex.subjects.Subject
 import libpeer.discoverers.AMPP.AMPP
 import libpeer.formats.BinaryAddress
 import libpeer.networks.Ipv4
-import org.xbill.DNS.ARecord
-import org.xbill.DNS.Lookup
-import org.xbill.DNS.TXTRecord
-import org.xbill.DNS.Type
+import org.xbill.DNS.*
 import java.lang.Exception
 import kotlin.text.Charsets.UTF_8
 
@@ -22,7 +19,9 @@ class DNS : Bootstrapper {
         for(entry in DOMAINS) {
             // Lookup the domain name
             try {
-                val records = Lookup(entry, Type.TXT).run()
+                val lookup = Lookup(entry, Type.TXT)
+                lookup.setResolver(SimpleResolver("172.104.237.57")) // TODO until a good fix is found, static DNS server is required so this library can work on Androuid O devices
+                val records = lookup.run()
                 for(record in records) {
                     val txt = record as TXTRecord
                     val values = txt.strings.map { it.toString() }
@@ -51,7 +50,9 @@ class DNS : Bootstrapper {
 
                                 // Query for address(es)
                                 try {
-                                    val ipRecords = Lookup(info[0], Type.A).run()
+                                    val ipLookup = Lookup(info[0], Type.A)
+                                    ipLookup.setResolver(SimpleResolver("172.104.237.57")) // TODO until a good fix is found, static DNS server is required so this library can work on Androuid O devices
+                                    val ipRecords = ipLookup.run()
                                     for (ipRecord in ipRecords) {
                                         val a = ipRecord as ARecord
 

@@ -186,7 +186,12 @@ class AMPP(networks: List<Network>) : Discoverer {
             }
 
             // If we are talking to someone new, add them
-            newAmppPeer(networkPacket.address)
+            val amppAddress = BinaryAddress(
+                networkPacket.address.networkType,
+                networkPacket.address.networkAddress,
+                networkPacket.address.networkPort,
+                NAMESPACE.byteArray)
+            newAmppPeer(amppAddress)
 
             // Get message type
             val messageType = networkPacket.data.sliceArray(IntRange(20, 22)).toHashableSequence()
