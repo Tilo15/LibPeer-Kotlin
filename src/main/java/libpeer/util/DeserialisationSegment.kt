@@ -8,7 +8,8 @@ class DeserialisationSegment {
 
     constructor(data: ByteArray, delimiter: Byte, start: Int = 0) {
         // Find the delimiter
-        val position = data.indexOf(delimiter)
+        // TODO make this actually tolerable
+        val position = data.sliceArray(IntRange(start, data.size - 1)).indexOf(delimiter) + start
 
         // Create the ByteArray to hold the segment
         segment = ByteArray(position - start)
